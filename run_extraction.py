@@ -162,7 +162,10 @@ def build_sections(content_str: str) -> list[str]:
         else:
             end = key + 100 if key + 100 < len(chunks) else len(chunks)
 
-        while start < end:
+        # Preserve the original script's bounded loop shape.  ``merge`` can
+        # return the same ``start`` for pathological chunk boundaries, and the
+        # Colab code avoided an infinite loop because this was a finite ``for``.
+        for _ in range(end - start + 1):
             merge_result, start = merge(start, end, key, chunks)
             section_list.append(merge_result)
             if start == end - 1:
